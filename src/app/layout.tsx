@@ -13,8 +13,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="jp-ja">
-      <body className={`antialiased p-3 ${font.className}`} >
-        <Header />
+      <body className={`antialiased ${font.className}`} >
+        <div className="p-3">
+          <Header />
+        </div>
+        
         { children }
       </body>
     </html>
