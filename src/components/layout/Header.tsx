@@ -3,7 +3,11 @@ import DefaultLink from "../ui/link";
 import prisma from "@/libs/prisma";
 import Link from "next/link";
 
-export default async function Header() {
+interface HeaderProps {
+    login: boolean;
+}
+
+export default async function Header({ login }: HeaderProps) {
     
     return (
         <header className={`border border-gray-600 flex items-center justify-between rounded-md px-6 py-3`}>
@@ -18,9 +22,16 @@ export default async function Header() {
             </div>
 
             <div className="flex items-center p-2">
-                <DefaultLink href="/login">
-                    ログイン
-                </DefaultLink>
+                { login ? (
+                    <DefaultLink href="/dashboard">
+                        ダッシュボード
+                    </DefaultLink>
+                ) : (
+                    <DefaultLink href="/login">
+                        ログイン
+                    </DefaultLink>  
+                ) }
+                
             </div>
         </header>
     );
