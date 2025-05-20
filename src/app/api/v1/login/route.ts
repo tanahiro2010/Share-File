@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeForm } from "@/utils/decode";
 import { cookies } from "next/headers";
+import { md5 } from "@/utils/hash";
 import prisma from "@/libs/prisma";
 
 interface PostProps {
@@ -26,6 +27,23 @@ export async function POST(req: NextRequest) {
         }
         
         return NextResponse.json({ success: false, message: "The request parameter is invalid" }, { status: 400 });
+    }
+
+    const hashedPassword: string = md5(password);
+
+    const user = await prisma.user.findFirst({
+        where: {
+            email: email,
+            password: hashedPassword
+        }
+    });
+
+    if (!user) {
+        if (location) {
+            return NextResponse.redirect(new URL('/account/login?error=parameter-invalid', req.nextUrl));
+        }
+        
+        return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
     }
 
     
