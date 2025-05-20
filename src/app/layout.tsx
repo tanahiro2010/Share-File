@@ -21,8 +21,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <div className="p-3">
           <Header login={!!login} />
         </div>
+        <div className="min-h-screen">
+          { children }
+        </div>
         
-        { children }
       </body>
     </html>
   );

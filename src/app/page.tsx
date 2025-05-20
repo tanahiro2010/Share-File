@@ -4,8 +4,7 @@ import Header from "@/components/layout/Header";
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
-      
+    <>
       <main className="container mx-auto py-12">
         {/* ヒーローセクション */}
         <section className="text-center mb-16">
@@ -17,13 +16,13 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/upload"
+              href="/dashboard"
               className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               ファイルをアップロード
             </Link>
             <Link
-              href="/signup"
+              href="/account/register"
               className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors"
             >
               新規登録
@@ -133,6 +132,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

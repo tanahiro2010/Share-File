@@ -27,7 +27,7 @@ export default async function Header({ login }: HeaderProps) {
                         ダッシュボード
                     </DefaultLink>
                 ) : (
-                    <DefaultLink href="/login">
+                    <DefaultLink href="/account/login">
                         ログイン
                     </DefaultLink>  
                 ) }
