@@ -1,6 +1,6 @@
 import { MiddlewareConfig, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { auth } from './utils/auth';
+import { auth } from './libs/database/auth';
 
 const pageRequireSetting = {
     login: [  // ログインしてないと見れないページ

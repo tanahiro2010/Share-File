@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeForm } from "@/utils/decode";
 import { cookies } from "next/headers";
-import { md5 } from "@/utils/hash";
+import { sha256 } from "@/utils/hash";
 import prisma from "@/libs/prisma";
+import { registSession } from "@/libs/database/session";
 
 interface PostProps {
     email: string | null;
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: "The request parameter is invalid" }, { status: 400 });
     }
 
-    const hashedPassword: string = md5(password);
+    const hashedPassword: string = sha256(password);
 
     const user = await prisma.user.findFirst({
         where: {
@@ -46,5 +47,19 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
     }
 
-    
+    const token = await registSession(user.user_id);
+
+    if (!token) {
+        if (location) {
+            return NextResponse.redirect(new URL('/account/login?error=failed-regist-session', req.nextUrl));
+        }
+        
+        return NextResponse.json({ success: false, message: "Failed to regist session" }, { status: 400 });
+    }
+
+    if (location) {
+        return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+    }
+
+    return NextResponse.json({ success: true, message: "Success to login", body: { token }});
 }

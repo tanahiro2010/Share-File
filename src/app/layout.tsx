@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Sawarabi_Gothic } from 'next/font/google';
-import { auth } from "@/utils/auth";
+import { auth } from "@/libs/database/auth";
 import Header from "@/components/layout/Header";
 import "@/styles/globals.css";
 
