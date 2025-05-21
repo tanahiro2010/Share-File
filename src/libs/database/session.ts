@@ -21,7 +21,7 @@ async function getSession(userId?: string | null, token?: string): Promise<Sessi
 async function updateSession(token: string): Promise<boolean> {
     const session = await getSession(null, token);
 
-    if (!session) { // セッションが存在しなかったら
+    if (!session) {
         return false;
     }
 
