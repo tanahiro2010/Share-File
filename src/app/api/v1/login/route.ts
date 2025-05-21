@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
     }
 
-    const token = await registSession(user.user_id);
+    const token = await registSession(user.user_id ?? "");
 
     if (!token) {
         if (location) {
@@ -58,6 +58,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (location) {
+        const cookieStore = await cookies();
+        cookieStore.set('s-token', token);
+        
         return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
     }
 

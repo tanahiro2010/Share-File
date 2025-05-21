@@ -1,3 +1,6 @@
+import { bin2hex } from "@/utils/bin2hex";
+import { isEmail } from "@/utils/check";
+import { sha256 } from "@/utils/hash";
 import { User } from "@prisma/client";
 import prisma from "../prisma";
 
@@ -36,6 +39,21 @@ async function updateUser(email: string, data: Record<string, any>): Promise<nul
     return await getUser(null, email);
 }
 
-async function registUser(data: User) {
+async function registUser(email: string, name: string, password: string) {
+    const user = await getUser(null, email);
     
+    if (user) return null;
+    if (!isEmail(email)) return null;
+
+    const userId: string = bin2hex(32);
+    const result = await prisma.user.create({
+        data: {
+            email,
+            name,
+            password: sha256(password),
+            user_id: userId
+        }
+    });
+
+    return result;
 }
