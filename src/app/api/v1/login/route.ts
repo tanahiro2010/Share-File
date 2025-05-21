@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
         if (location) {
-            return NextResponse.redirect(new URL('/account/login?error=parameter-invalid', req.nextUrl));
+            return NextResponse.redirect(new URL('/account/login?error=user-not-found', req.nextUrl));
         }
         
         return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
