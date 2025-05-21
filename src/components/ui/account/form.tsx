@@ -14,6 +14,7 @@ function Input({ type = "text", name, placeholder, className, ...props }: InputP
             name={name}
             placeholder={placeholder}
             className={`w-2/3 rounded border border-gray-600 px-4 py-2 ${className}`}
+            required={true}
             {...props}
         />
     )

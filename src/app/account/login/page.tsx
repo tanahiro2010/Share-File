@@ -1,4 +1,5 @@
 import { Submit, Input } from "@/components/ui/account/form";
+import ErrorMessage from "@/components/base/account/error";
 
 export default function Login() {
     return (
@@ -7,6 +8,8 @@ export default function Login() {
                 <div className="text-2xl font-bold">
                     ログイン
                 </div>
+
+                <ErrorMessage />
 
                 <div className="mt-4">
                     <form action="/api/v1/login" method="post">
