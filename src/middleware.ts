@@ -2,55 +2,55 @@ import { MiddlewareConfig, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const pageRequireSetting = {
-    login: [  // ログインしてないと見れないページ
-        "/dashboard",
-        "/api/v2"
-    ],
-    logout: [ // ログインしてたら見れないページ
-        "/account",
-        "/api/v1"
-    ]
-}
+  login: ["/dashboard", "/api/v2"], // ログインしてないと見れない
+  logout: ["/account", "/api/v1"],  // ログインしてたら見れない
+};
 
 export default async function middleware(req: NextRequest) {
-    const uri = new URL(req.url);
-    const baseurl = `${uri.protocol}//${uri.host}`;
-    const pathname = uri.pathname;
+  const { pathname, origin } = req.nextUrl;
 
-    if (pathname === "/api/v1/session") {
-        return NextResponse.next();
-    }
-
-    const login = await (async () => {
-        const response = await fetch(baseurl +'/api/v1/session');
-        const data = await response.json();
-        return data.success;
-    })();
-
-    if (login) { // ログインしているなら
-        for (const path of pageRequireSetting.logout) {
-            if (pathname.startsWith(path)) {
-                return NextResponse.redirect(baseurl + "/dashboard");
-            }
-        }
-    } else {     // ログインしていないなら
-        for (const path of pageRequireSetting.login) {
-            if (pathname.startsWith(path)) {
-                return NextResponse.redirect(baseurl + "/account");
-            }
-        }
-    }
-
+  // ✅ /api/v1/session は middleware 適用対象から除外
+  if (pathname === "/api/v1/session") {
     return NextResponse.next();
+  }
+
+  // ✅ セッション状態を確認（fetch + try-catch）
+  const login = await (async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${origin}/api/v1/session`);
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      return data.success === true;
+    } catch (error) {
+      console.warn("Session fetch error:", error);
+      return false; // フェッチ失敗時は未ログイン扱い
+    }
+  })();
+
+  // ✅ パスに応じて適切なリダイレクト
+  const redirectTo = login
+    ? pageRequireSetting.logout.find(path => pathname.startsWith(path))
+      ? "/dashboard"
+      : null
+    : pageRequireSetting.login.find(path => pathname.startsWith(path))
+      ? "/account"
+      : null;
+
+  if (redirectTo) {
+    return NextResponse.redirect(`${origin}${redirectTo}`);
+  }
+
+  return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
+// ✅ 対象パス指定
 export const config: MiddlewareConfig = {
-    matcher: [
-        '/dashboard',
-        '/dashboard/:path*',
-        '/account/:path*',
-        '/api/v1/:path*', 
-        '/api/v2/:path*'
-    ],
-}
+  matcher: [
+    "/dashboard",
+    "/dashboard/:path*",
+    "/account/:path*",
+    "/api/v1/:path*",
+    "/api/v2/:path*",
+  ],
+};
