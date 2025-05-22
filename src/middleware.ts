@@ -16,6 +16,11 @@ export default async function middleware(req: NextRequest) {
     const uri = new URL(req.url);
     const baseurl = `${uri.protocol}//${uri.host}`;
     const pathname = uri.pathname;
+
+    if (pathname === "/api/v1/session") {
+        return NextResponse.next();
+    }
+
     const login = await (async () => {
         const response = await fetch(baseurl +'/api/v1/session');
         const data = await response.json();
