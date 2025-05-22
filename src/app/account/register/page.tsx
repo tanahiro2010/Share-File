@@ -1,5 +1,6 @@
 import { Submit, Input } from "@/components/ui/account/form";
 import ErrorMessage from "@/components/base/account/error";
+import DefaultLink from "@/components/ui/link";
 
 export default function Register() {
     return (
@@ -27,6 +28,10 @@ export default function Register() {
                             登録
                         </Submit>
                     </form>
+
+                    <div className="mt-4 flex justify-center">
+                        ログインは<DefaultLink href="/account/login">こちら</DefaultLink>
+                    </div>
                 </div>
             </div>
         </main>

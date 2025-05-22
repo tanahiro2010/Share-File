@@ -1,47 +1,46 @@
-import { MiddlewareConfig, NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
-import { auth } from './libs/database/auth';
+import { NextRequest, NextResponse } from 'next/server';
+import type { MiddlewareConfig } from 'next/server';
 
 const pageRequireSetting = {
-    login: [  // ログインしてないと見れないページ
-        "/dashboard",
-        "/api/v2"
-    ],
-    logout: [ // ログインしてたら見れないページ
-        "/account",
-        "/api/v1"
-    ]
-}
+  login: ["/dashboard", "/api/v2"],  // 未ログインではアクセス不可
+  logout: ["/account", "/api/v1"]    // ログイン済ではアクセス不可
+};
 
 export default async function middleware(req: NextRequest) {
-    const uri = new URL(req.url);
-    const baseurl = `${uri.protocol}//${uri.host}`;
-    const pathname = uri.pathname;
-    const login = await auth();
+  const url = new URL(req.url);
+  const pathname = url.pathname;
+  const baseurl = `${url.protocol}//${url.host}`;
 
-    if (login) { // ログインしているなら
-        pageRequireSetting.logout.forEach((path: string) => {
-            if (pathname.startsWith(path)) {
-                return NextResponse.redirect(baseurl + "/dashboard");
-            }
-        });
-    } else {     // ログインしていないなら
-        pageRequireSetting.login.forEach((path: string) => {
-            if (pathname.startsWith(path)) {
-                return NextResponse.redirect(baseurl + "/account");
-            }
-        });
-    }
+  // セッション確認を const で構成
+  const isLoggedIn = await fetch(`${baseurl}/api/v1/session`)
+    .then(res => res.json())
+    .then(data => !!data.success)
+    .catch(() => false); // エラー時は未ログイン扱い
 
-    return NextResponse.next();
+  const shouldRedirectToDashboard = isLoggedIn && pageRequireSetting.logout.some(path =>
+    pathname.startsWith(path)
+  );
+
+  if (shouldRedirectToDashboard) {
+    return NextResponse.redirect(new URL('/dashboard', baseurl));
+  }
+
+  const shouldRedirectToAccount = !isLoggedIn && pageRequireSetting.login.some(path =>
+    pathname.startsWith(path)
+  );
+
+  if (shouldRedirectToAccount) {
+    return NextResponse.redirect(new URL('/account', baseurl));
+  }
+
+  return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config: MiddlewareConfig = {
-    matcher: [
-        '/dashboard/:path*',
-        '/account/:path*',
-        '/api/v1/:path*', 
-        '/api/v2/:path*'
-    ],
-}
+  matcher: [
+    '/dashboard/:path*',
+    '/account/:path*',
+    '/api/v1/:path*',
+    '/api/v2/:path*'
+  ]
+};

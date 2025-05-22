@@ -39,7 +39,7 @@ async function updateUser(email: string, data: Record<string, any>): Promise<nul
     return await getUser(null, email);
 }
 
-async function registUser(email: string, name: string, password: string) {
+async function registUser(email: string, name: string, password: string): Promise<null | User> {
     const user = await getUser(null, email);
     
     if (user) return null;
@@ -57,3 +57,5 @@ async function registUser(email: string, name: string, password: string) {
 
     return result;
 }
+
+export { getUser, updateUser, registUser };

@@ -18,7 +18,17 @@ export default function ErrorMessage() {
             case 'parameter-invalid':
                 setTitle('送信されたパラメーターが不正です');
                 setDescription('値が設定されていない、SQLインジェクションなどの内容が含まれている可能性があります');
-                
+                break;
+
+            case 'user-not-found':
+                setTitle('ユーザーが見つかりません');
+                setDescription('ユーザーが見つからないか、パスワードが間違っています');
+                break;
+
+            case 'user-already-exists':
+                setTitle('ユーザーが既に存在します');
+                setDescription('そのメールアドレスを使用しているユーザーが既に存在します');
+                break;
         }
     }, []);
 
