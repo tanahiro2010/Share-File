@@ -47,6 +47,7 @@ export default async function middleware(req: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config: MiddlewareConfig = {
     matcher: [
+        '/dashboard',
         '/dashboard/:path*',
         '/account/:path*',
         '/api/v1/:path*', 
